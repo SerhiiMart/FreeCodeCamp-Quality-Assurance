@@ -6,6 +6,7 @@ const fccTesting = require('./freeCodeCamp/fcctesting.js');
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
@@ -18,6 +19,8 @@ app.route('/').get((req, res) => {
   res.render(process.cwd() + '/views/pug/index', {title: 'Hello', message: 'Please login'});
 });
 
+
+////Set up Passport
 const session = require('express-session');
 const passport = require('passport');
 
@@ -29,6 +32,18 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+////Serialization of a User Object
+const ObjectID = require('mongodb').ObjectID; ///added for Serialization of a User Object
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser((id, done) => {
+  myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+    done(null, null);
+  });
+});
 
 app.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
