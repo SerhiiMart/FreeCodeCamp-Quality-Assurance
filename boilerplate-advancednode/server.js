@@ -15,9 +15,20 @@ app.set('view engine', 'pug')
 app.set('views', './views/pug')
 
 app.route('/').get((req, res) => {
-  res.render('index');
+  res.render(process.cwd() + '/views/pug/index', {title: 'Hello', message: 'Please login'});
 });
 
+const session = require('express-session');
+const passport = require('passport');
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
