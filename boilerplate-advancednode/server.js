@@ -37,8 +37,8 @@ app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }
   res.redirect('/profile');
 });
 
-app.route('/profile').get((req, res) => {
-  res.render(process.cwd() + '/views/pug/profile');
+app.route('/profile').get(ensureAuthenticated, (req, res) => {
+  res.render(process.cwd() + '/views/pug/profile',  { username: req.user.username });
 });
 ////Set up Passport
 
@@ -99,7 +99,13 @@ passport.use(new LocalStrategy(
   });
 });
 
-
+//// ensuring Authenticating
+function ensureAuthenticated(req, res, next){
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/');
+};
 
 
 // app.listen out here...
