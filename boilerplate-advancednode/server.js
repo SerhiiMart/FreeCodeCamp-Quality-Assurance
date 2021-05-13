@@ -22,15 +22,24 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'pug');
 
+
+////Routes
  app.route('/').get((req, res) => {
     // Change the response to render the Pug template
     res.render('pug', {
       title: 'Connected to Database',
-      message: 'Please login'
+      message: 'Please login',
+      showLogin: true
     });
   });
 
+app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+  res.redirect('/profile');
+});
 
+app.route('/profile').get((req, res) => {
+  res.render(process.cwd() + '/views/pug/profile');
+});
 ////Set up Passport
 
 app.use(session({
