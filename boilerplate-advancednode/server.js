@@ -14,7 +14,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 //console.log(process.env.MONGO_URI);
 
-
+////Io Server
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -42,17 +44,23 @@ myDB(async (client) => {
   routes(app, myDataBase);
   auth(app, myDataBase);
   
+ ////Io connection
+  let currentUsers = 0;
+  io.on('connection', (socket) => {
+    ++currentUsers;
+    io.emit('user count', currentUsers);
+    console.log('A user has connected');
+  });
   // Be sure to add this...
-}).catch(e => {
+}).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
   });
 });
 
 
-
 // app.listen out here...
 ///Listener
-app.listen(PORT, () => {
+ http.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
 });

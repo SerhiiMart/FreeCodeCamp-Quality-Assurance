@@ -24,6 +24,9 @@ app.route('/profile').get(ensureAuthenticated, (req, res) => {
   res.render(process.cwd() + '/views/pug/profile',  { username: req.user.username });
 });
 
+app.route('/chat').get(ensureAuthenticated, (req, res) => {
+res.render('pug/chat', { user: req.user });
+});
 
 app.route('/logout').get((req, res) => {
   req.logout();
