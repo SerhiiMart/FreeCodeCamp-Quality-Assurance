@@ -65,13 +65,23 @@ myDB(async (client) => {
   let currentUsers = 0;
   io.on('connection', (socket) => {
     ++currentUsers;
-    io.emit('user count', currentUsers);
-    console.log('A user has connected');
+       io.emit('user', {
+      name: socket.request.user.name,
+      currentUsers,
+      connected: true
+    });
+     socket.on('chat message', (message) => {
+      io.emit('chat message', { name: socket.request.user.name, message });
+    });
     console.log('user ' + socket.request.user.name + ' connected');
     socket.on('disconnect', () => {
     console.log('A user has disconnected');
       --currentUsers;
-      io.emit('user count', currentUsers);
+        io.emit('user', {
+        name: socket.request.user.name,
+        currentUsers,
+        connected: false
+      });
 });
   });
   // Be sure to add this...
@@ -80,7 +90,6 @@ myDB(async (client) => {
     res.render('pug', { title: e, message: 'Unable to login' });
   });
 });
-
 
 ///// Success and fail callback functions
 function onAuthorizeSuccess(data, accept) {
