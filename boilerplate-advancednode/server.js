@@ -12,19 +12,23 @@ const session = require('express-session');
 const passport = require('passport');
 const PORT = process.env.PORT || 3000;
 const app = express();
-//console.log(process.env.MONGO_URI);
 
 ////Io Server
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
+////Authentication with Socket.IO
+const passportSocketIo = require('passport.socketio');
+const cookieParser = require('cookie-parser');
+const MongoStore = require('connect-mongo')(session);
+const URI = process.env.MONGO_URI;
+const store = new MongoStore({ url: URI });
+app.set('view engine', 'pug');
+
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.set('view engine', 'pug');
-
 
 ////Seting up Passport
 
@@ -32,10 +36,23 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
-  cookie: { secure: false }
+  cookie: { secure: false },
+  key: 'express.sid',
+  store: store
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+io.use(
+  passportSocketIo.authorize({
+    cookieParser: cookieParser,
+    key: 'express.sid',
+    secret: process.env.SESSION_SECRET,
+    store: store,
+    success: onAuthorizeSuccess,
+    fail: onAuthorizeFail
+  })
+);
 
 ////Connection to the database
 myDB(async (client) => {
@@ -50,6 +67,12 @@ myDB(async (client) => {
     ++currentUsers;
     io.emit('user count', currentUsers);
     console.log('A user has connected');
+    console.log('user ' + socket.request.user.name + ' connected');
+    socket.on('disconnect', () => {
+    console.log('A user has disconnected');
+      --currentUsers;
+      io.emit('user count', currentUsers);
+});
   });
   // Be sure to add this...
 }).catch((e) => {
@@ -58,6 +81,18 @@ myDB(async (client) => {
   });
 });
 
+
+///// Success and fail callback functions
+function onAuthorizeSuccess(data, accept) {
+  console.log('successful connection to socket.io');
+
+  accept(null, true);
+}
+function onAuthorizeFail(data, message, error, accept) {
+  if (error) throw new Error(message);
+  console.log('failed connection to socket.io:', message);
+  accept(null, false);
+}
 
 // app.listen out here...
 ///Listener
