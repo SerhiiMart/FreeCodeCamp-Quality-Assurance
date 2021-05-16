@@ -61,16 +61,25 @@ function ConvertHandler() {
     switch (unit) {
       case "gal":
         return "L";
+        break
       case "l":
         return "gal";
+        break
       case "lbs":
         return "kg";
+        break
       case "kg":
         return "lbs";
+        break
       case "mi":
         return "km";
+        break
       case "km":
         return "mi";
+        break
+      default:
+        return 'invalid unit'
+        break
     }
   };
 
@@ -79,18 +88,25 @@ function ConvertHandler() {
     switch (unit) {
       case "gal":
         return "gallons";
+        break
       case "l":
         return "liters";
+        break
       case "lbs":
         return "pounds";
+        break
       case "kg":
         return "kilograms";
+        break
       case "mi":
         return "miles";
+        break
       case "km":
         return "kilometers";
+        break
       default:
-        return;
+        return 'units';
+        break
     }
   };
 
@@ -120,7 +136,8 @@ function ConvertHandler() {
         result = initNum / miToKm;
         break;
       default:
-        result = "error";
+        result =  'invalid number'
+        break
     }
 
     if (result != "error") {
