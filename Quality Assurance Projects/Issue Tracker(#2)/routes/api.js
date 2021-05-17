@@ -1,4 +1,7 @@
 'use strict';
+const mongoose = require('mongoose');
+const Issue = require('../models').Issue;
+const Project = require('../models').Project;
 
 module.exports = function (app) {
 
@@ -11,7 +14,16 @@ module.exports = function (app) {
     
     .post(function (req, res){
       let project = req.params.project;
-      
+      const {
+        issue_title, issue_text, created_by, assigned_to, status_text
+      } = req.body.project;
+      if (!issue_title || !issue_text  || !created_by ){
+        res.json("Required fields are missing");
+        return;
+      }
+      const newIssue = new Issue({
+        
+      })
     })
     
     .put(function (req, res){
