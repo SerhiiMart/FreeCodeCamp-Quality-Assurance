@@ -1,67 +1,178 @@
-'use strict';
+const chaiHttp = require('chai-http');
+const chai = require('chai');
+const assert = chai.assert;
+const server = require('../server'); 
+chai.use(chaiHttp);
+        
+suite('Functional Tests', function() {
+  suite('Routing Tests', function() {
+    suite('POST request to /api/issues/{project}', function() {
+      test('Create an issue with every field', function(done) {
+        chai.request(server)
+          .post('/api/issues/test')
+          .send({
+            issue_title: "Testing title",
+            issue_text: "Testing text",
+            created_by: "SerhiiMart",
+            assigned_to: "SerhiiMart",
+            status_text: "Don't know what's wrong"
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200, "response status should be 200");
+            assert.exists(res.body._id);
+            assert.equal(res.body.issue_title, "Testing title");
+            assert.equal(res.body.issue_text, "Testing text");
+            assert.equal(res.body.created_by, "SerhiiMart");
+            assert.equal(res.body.assigned_to, "SerhiiMart");
+            assert.equal(res.body.status_text, "Don't know what's wrong");
+            assert.exists(res.body.created_on);
+            assert.exists(res.body.updated_on);
+            assert.equal(res.body.open, true);
+            done();
+          });
+      });
 
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const expect      = require('chai').expect;
-const cors        = require('cors');
-require('dotenv').config();
+      test('Create an issue with only required fields', function(done) {
+        chai.request(server)
+          .post('/api/issues/{project}')
+          .send({
+            issue_title: "Testing title",
+            issue_text: "Don't know what's wrong",
+            created_by: "SerhiiMart"
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200,  "response status should be 200");
+            assert.exists(res.body._id);
+            assert.equal(res.body.issue_title, "Testing title");
+            assert.equal(res.body.issue_text, "Don't know what's wrong");
+            assert.equal(res.body.created_by, "SerhiiMart")
+            assert.exists(res.body.assigned_to);
+            assert.exists(res.body.status_text);
+            assert.exists(res.body.created_on);
+            assert.exists(res.body.updated_on);
+            assert.equal(res.body.open, true);
+            done();
+          });
+      });
 
-const apiRoutes         = require('./routes/api.js');
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
-require('./database-conection');
+      test('Create an issue with missing required fields', function(done) {
+        chai.request(server)
+          .post('/api/issues/test')
+          .send({
+            issue_title: "Testing issue with missing required fields",
+          })
+          .end(function (err, res) {
+            assert.equal(res.body.error, "required field(s) missing");
+            done();
+          });
+      });
 
-let app = express();
+    });
 
-app.use('/public', express.static(process.cwd() + '/public'));
+    suite('GET request to /api/issues/{project}', function() {
 
-app.use(cors({origin: '*'})); //For FCC testing purposes only
+      test('View issues on a project', function(done) {
+        chai.request(server)
+          .get('/api/issues/test')
+          .end(function (err, res) {
+            const { _id, issue_title, issue_text, created_on, updated_on, created_by,
+assigned_to, open, status_text} = res.body[0];
+            assert.exists(_id);
+            assert.exists(issue_title);
+            assert.exists(issue_text);
+            assert.exists(created_on);
+            assert.exists(updated_on);
+            assert.exists(created_by);
+            assert.exists(assigned_to);
+            assert.exists(open);
+            assert.exists(status_text);
+            done();
+          });
+      });
 
+      test('View issues on a project with one filter', function(done) {
+        chai.request(server)
+          .get('/api/issues/apitest')
+          .query({
+            issue_title: "test title",
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            const { issue_title } = res.body[0];
+            assert.equal(issue_title, "test title");
+            done();
+          });
+      });
 
+      test('View issues on a project with multiple filters', function(done) {
+        chai.request(server)
+          .get('/api/issues/apitest')
+          .query({
+            issue_title: "test title",
+            issue_text: "test text",
+            created_by: "SerhiiMart"
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            const { issue_title, issue_text, created_by } = res.body[0];
+            assert.deepEqual(issue_title, "test title");
+            assert.equal(issue_text, "test text");
+            assert.equal(created_by, "SerhiiMart");
+            done();
+          });
+      });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+    });
 
-//Sample front-end
-app.route('/:project/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/issue.html');
+    suite('PUT request to /api/issues/{project}', function() {
+
+      test('Update one field on an issue', function(done) {
+        done();
+
+      });
+
+      test('Update multiple fields on an issue', function(done) {
+        done();
+
+      });
+
+      test('Update an issue with missing _id', function(done) {
+        done();
+
+      });
+
+      test('Update an issue with no fields to update', function(done) {
+        done();
+
+      });
+
+      test('Update an issue with an invalid _id', function(done) {
+        done();
+
+      });
+
+    });
+
+    suite('DELETE request to /api/issues/{project}', function() {
+
+      test('Delete an issue', function(done) {
+        done();
+
+      });
+
+      test('Delete an issue with an invalid _id', function(done) {
+        done();
+
+      });
+
+      test('Delete an issue with missing _id', function(done) {
+        done();
+
+      });
+
+    });
+
   });
 
-//Index page (static HTML)
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
 
-//For FCC testing purposes
-fccTestingRoutes(app);
-
-//Routing for API 
-apiRoutes(app);  
-    
-//404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
 });
-
-//Start our server and tests!
-app.listen(process.env.PORT || 3000, function () {
-  console.log("Listening on port " + process.env.PORT);
-  if(process.env.NODE_ENV==='test') {
-    console.log('Running Tests...');
-    setTimeout(function () {
-      try {
-        runner.run();
-      } catch(e) {
-        let error = e;
-          console.log('Tests are not valid:');
-          console.log(error);
-      }
-    }, 3500);
-  }
-});
-
-module.exports = app; //for testing

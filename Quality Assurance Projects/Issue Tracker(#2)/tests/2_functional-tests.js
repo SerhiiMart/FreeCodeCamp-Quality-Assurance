@@ -6,7 +6,7 @@ chai.use(chaiHttp);
         
 suite('Functional Tests', function() {
   suite('Routing Tests', function() {
-    suite('POST request to /api/issues/{project}  => object with issue data', function() {
+    suite('POST request to /api/issues/{project}', function() {
       test('Create an issue with every field', function(done) {
         chai.request(server)
           .post('/api/issues/test')
@@ -19,29 +19,38 @@ suite('Functional Tests', function() {
           })
           .end(function (err, res) {
             assert.equal(res.status, 200, "response status should be 200");
+            assert.exists(res.body._id);
             assert.equal(res.body.issue_title, "Testing title");
             assert.equal(res.body.issue_text, "Testing text");
             assert.equal(res.body.created_by, "SerhiiMart");
             assert.equal(res.body.assigned_to, "SerhiiMart");
             assert.equal(res.body.status_text, "Don't know what's wrong");
+            assert.exists(res.body.created_on);
+            assert.exists(res.body.updated_on);
+            assert.equal(res.body.open, true);
             done();
           });
       });
 
-      test('Create an issue with only required fields:', function(done) {
+      test('Create an issue with only required fields', function(done) {
         chai.request(server)
-          .post('/api/issues/test')
+          .post('/api/issues/{project}')
           .send({
             issue_title: "Testing title",
             issue_text: "Don't know what's wrong",
-            created_by: "SerhiiMart",
+            created_by: "SerhiiMart"
           })
           .end(function (err, res) {
             assert.equal(res.status, 200,  "response status should be 200");
             assert.exists(res.body._id);
             assert.equal(res.body.issue_title, "Testing title");
             assert.equal(res.body.issue_text, "Don't know what's wrong");
-            assert.equal(res.body.created_by, "SerhiiMart");
+            assert.equal(res.body.created_by, "SerhiiMart")
+            assert.exists(res.body.assigned_to);
+            assert.exists(res.body.status_text);
+            assert.exists(res.body.created_on);
+            assert.exists(res.body.updated_on);
+            assert.equal(res.body.open, true);
             done();
           });
       });
@@ -67,7 +76,7 @@ suite('Functional Tests', function() {
           .get('/api/issues/test')
           .end(function (err, res) {
             const { _id, issue_title, issue_text, created_on, updated_on, created_by,
-assigned_to, open, status_text} = res.body[0] || {};
+assigned_to, open, status_text} = res.body[0];
             assert.exists(_id);
             assert.exists(issue_title);
             assert.exists(issue_text);
@@ -83,31 +92,31 @@ assigned_to, open, status_text} = res.body[0] || {};
 
       test('View issues on a project with one filter', function(done) {
         chai.request(server)
-          .get('/api/issues/test')
+          .get('/api/issues/apitest')
           .query({
-            issue_title: "test",
+            issue_title: "test title",
           })
           .end(function (err, res) {
-             assert.equal(res.status, 200);
-            const { issue_title } = res.body[0] || {};
-            assert.equal(issue_title, "test");
+            assert.equal(res.status, 200);
+            const { issue_title } = res.body[0];
+            assert.equal(issue_title, "test title");
             done();
           });
       });
 
       test('View issues on a project with multiple filters', function(done) {
         chai.request(server)
-          .get('/api/issues/test')
+          .get('/api/issues/apitest')
           .query({
-            issue_title: "test",
-            issue_text: "test",
+            issue_title: "test title",
+            issue_text: "test text",
             created_by: "SerhiiMart"
           })
           .end(function (err, res) {
             assert.equal(res.status, 200);
-            const { issue_title, issue_text, created_by } = res.body[0] || {};
-            assert.deepEqual(issue_title, "test");
-            assert.equal(issue_text, "test");
+            const { issue_title, issue_text, created_by } = res.body[0];
+            assert.deepEqual(issue_title, "test title");
+            assert.equal(issue_text, "test text");
             assert.equal(created_by, "SerhiiMart");
             done();
           });
