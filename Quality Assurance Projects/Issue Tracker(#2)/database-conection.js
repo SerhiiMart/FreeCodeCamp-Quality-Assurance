@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+let mongodb = require("mongodb");
 
- const DB = mongoose.connect(process.env.DB, {
+ const db = mongoose.connect(process.env.DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
 });
+db.on("error", (error) => console.log("Database connection error: ", error));
+db.on("connected", () => console.log("Connected to database"));
 
-module.exports = DB;
+module.exports = db;
