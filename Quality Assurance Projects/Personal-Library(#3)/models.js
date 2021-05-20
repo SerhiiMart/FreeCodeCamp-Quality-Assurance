@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const librarySchema = new Schema({
   title: {type: String, required: true },
-  comments: {type: String}
+  comments: {type: Array, default: []},
+  commentcount: {type: Number, default: 0}
 });
 
-const Books = mongoose.model('Books', librarySchema);
+const Book = mongoose.model('Book', librarySchema);
 
-exports.Books = Books;
+exports.Book = Book;
