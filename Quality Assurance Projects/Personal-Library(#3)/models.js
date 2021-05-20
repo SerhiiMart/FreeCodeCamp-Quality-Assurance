@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 const librarySchema = new Schema({
   title: {type: String, required: true },
-  comments: {type: String, required: true },
+  comments: {type: String}
 });
 
-const libraryModel = mongoose.model('libraryModel', librarySchema);
+const Books = mongoose.model('Books', librarySchema);
 
-exports.libraryModel = libraryModel;
+exports.Books = Books;
