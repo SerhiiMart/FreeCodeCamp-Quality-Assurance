@@ -133,7 +133,7 @@ suite('Functional Tests', function() {
     suite('DELETE /api/books/[id] => delete book object id', function() {
 
       test('Test DELETE /api/books/[id] with valid id in db', function(done){
-         chai.request(server)
+       chai.request(server)
         .delete(`/api/books/${searchID}`)
         .end(function(error, res){
           assert.equal(res.status, 200);
