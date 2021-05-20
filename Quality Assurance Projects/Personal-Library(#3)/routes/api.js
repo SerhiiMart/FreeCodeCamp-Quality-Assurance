@@ -19,8 +19,8 @@ module.exports = function (app) {
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
       await Book.find({}, (error, data) => {
-        if(error) return console.error(data)
-        res.json(data)
+      return (error) ? console.error(data)
+       : res.json(data)
       })
     })
     
@@ -29,8 +29,8 @@ module.exports = function (app) {
       let book = new Book({title: title})
       //response will contain new book object including atleast _id and title
       await book.save((error, data) => {
-        if(error) return res.json("missing required field title")
-        res.json({
+       return (error) ? res.json("missing required field title")
+        : res.json({
           _id: data._id,
           title: data.title
         })
