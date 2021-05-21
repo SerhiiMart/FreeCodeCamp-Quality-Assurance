@@ -1,5 +1,5 @@
 code {
-  background: #d0d0d5;
+  background: #a2a2b4;
 }
 
 .container {
@@ -21,7 +21,7 @@ textarea {
 }
 
 #error-msg {
-  color: red;
+  color: rgb(149, 5, 168);
   display: inline;
   margin-left: 10px;
 }
@@ -79,7 +79,7 @@ td {
 }
 
 .sudoku-input {
-  border: 1px solid black;
+  border: 1px solid rgb(57, 189, 18);
   width: 2em;
   height: 2em;
   text-align: center;
