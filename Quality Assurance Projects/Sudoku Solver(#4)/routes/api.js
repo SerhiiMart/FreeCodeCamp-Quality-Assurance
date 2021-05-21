@@ -54,7 +54,6 @@ module.exports = function (app) {
   app.route('/api/solve')
     .post((req, res) => {
       let puzzle = req.body.puzzle;
-      //Validate the puzzle; make sure its exactly 81 characters long and doesn't contain any characters that are not periods or digits.
       let validPuzzle = solver.validate(puzzle);
       if (validPuzzle === "Required field missing"){
         res.json({error:'Required field missing'})
