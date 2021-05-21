@@ -13,10 +13,10 @@ module.exports = function (app) {
       if (!puzzle || !coordinate || !value){
         res.json({error:'Required field(s) missing'})
       }
-      else if (validPuzzle==="Invalid characters in puzzle"){
+      else if (validPuzzle === "Invalid characters in puzzle"){
         res.json({error:"Invalid characters in puzzle"})
       } 
-      else if (validPuzzle==="Expected puzzle to be 81 characters long"){
+      else if (validPuzzle === "Expected puzzle to be 81 characters long"){
         res.json({error:"Expected puzzle to be 81 characters long"}); 
       }
       else if (/^([A-I][1-9])$/.test(coordinate) === false){

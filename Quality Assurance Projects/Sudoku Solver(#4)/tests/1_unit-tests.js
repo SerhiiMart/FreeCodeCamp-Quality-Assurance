@@ -5,7 +5,7 @@ const Solver = require('../controllers/sudoku-solver.js');
 let solver = new Solver();
 
 suite('UnitTests', () => {
-  test("Logic handles a valid puzzle string of 81 characters", (done)=>{
+  test("Logic handles a valid puzzle string of 81 characters", (done) => {
     puzzles.puzzlesAndSolutions.map(elem=>{
       assert.equal(elem[0].length, 81)
       assert.equal(solver.validate(elem[0]), elem[0])
