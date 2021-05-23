@@ -5,48 +5,46 @@ const britishOnly = require('./british-only.js')
 
 class Translator {
   constructor() {
-    let toAmericanTitles = {};
-    let toAmericanSpelling =  {};
-    for (let key in americanToBritishTitles) {
-      toAmericanTitles[americanToBritishTitles[key]] = key;
+    let ameticanTitles = {};
+    let americanSpelling =  {};
+    for (let e in americanToBritishTitles) {
+      ameticanTitles[americanToBritishTitles[e]] = e;
     }
-    for (let key in americanToBritishSpelling) {
-      toAmericanSpelling[americanToBritishSpelling[key]] = key;
+    for (let e in americanToBritishSpelling) {
+      americanSpelling[americanToBritishSpelling[e]] = e;
     }
     
-    this.toAmTitles = toAmericanTitles;
-    this.toAmSpelling = toAmericanSpelling;
+    this.toAmaricTitles = ameticanTitles;
+    this.toAmericSpelling = americanSpelling;
   }
   
-  getTranslation(term, instructions) {
-    let translated = "";
-    
-    if (instructions === "american-to-british") {
-      translated = americanOnly[term] || americanToBritishSpelling[term] || americanToBritishTitles[term] || term; 
-      if (/^\d{1,2}[:]\d{2}[ap]m$/.test(term) || /^\d{1,2}[:]\d{2}$/.test(term)) {
-        translated = term.replace(":", ".");
+  getTranslation(usage, order) {
+    let translation = "";
+    if (order === "american-to-british") {
+      translation = americanOnly[usage] || americanToBritishSpelling[usage] || americanToBritishTitles[usage] || usage; 
+      if (/^\d{1,2}[:]\d{2}[ap]m$/.test(usage) || /^\d{1,2}[:]\d{2}$/.test(usage)) {
+        translation = usage.replace(":", ".");
         }
     } else {
-      translated = britishOnly[term] || this.toAmSpelling[term] || this.toAmTitles[term] || term;
-      if (/^\d{1,2}[.]\d{2}[ap]m$/.test(term) || /^\d{1,2}[.]\d{2}$/.test(term)) {
-        translated = term.replace(".", ":");
+      translation = britishOnly[usage] || this.toAmericSpelling[usage] || this.toAmaricTitles[usage] || usage;
+      if (/^\d{1,2}[.]\d{2}[ap]m$/.test(usage) || /^\d{1,2}[.]\d{2}$/.test(usage)) {
+        translation = usage.replace(".", ":");
         }
     }
-		if (translated === this.toAmTitles[term] || translated === americanToBritishTitles[term]) {
-      	translated = '<span class="highlight">' + translated[0].toUpperCase() + translated.substring(1) + '</span>';
-    } else if (translated !== term) {
-      	translated = '<span class="highlight">' + translated + '</span>';
+		if (translation === this.toAmaricTitles[usage] || translation === americanToBritishTitles[usage]) {
+      	translation = '<span class="highlight">' + translation[0].toUpperCase() + translation.substring(1) + '</span>';
+    } else if (translation !== usage) {
+      	translation = '<span class="highlight">' + translation + '</span>';
       }
     
-    return translated;
+    return translation;
   }
   translate(text, from_to) {
-    
     let text_str = text.trim();
-    let end_mark = /\w[!?.]$/.test(text_str) ? text_str.slice(-1) : "";
-    if (end_mark) { text_str = text_str.substring(0, text_str.length - 1) }
+    let ending = /\w[!?.]$/.test(text_str) ? text_str.slice(-1) : "";
+    if (ending) { text_str = text_str.substring(0, text_str.length - 1) }
     let translation = "";
-    // Using regex to find translation
+
     while (text_str) {
       if ((/^\s/).test(text_str)) {
       
@@ -81,7 +79,7 @@ class Translator {
       }
 
       }
-    translation += end_mark;
+    translation = translation + ending;
     return translation;
   }
 
