@@ -79,7 +79,7 @@ class Translator {
       }
 
       }
-    translation = translation + ending;
+    translation +=  ending;
     return translation;
   }
 
