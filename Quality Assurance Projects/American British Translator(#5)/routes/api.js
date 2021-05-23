@@ -1,25 +1,27 @@
 'use strict';
 
 const Translator = require('../components/translator.js');
-const translator = new Translator();
 
 module.exports = function (app) {
+  
+  const translator = new Translator();
 
   app.route('/api/translate')
     .post((req, res) => {
-      const locator = ["american-to-british", "british-to-american"];
+      const{text,locale}=req.body;
+      if(!locale||text === undefined){
+       return res.json({error:'Required field(s) missing'})
+      }
+      if(text === ''){
+        return res.json({error:'No text to translate'})
+      }
 
-      if (req.body.text === "") {
-        return res.json({ error: "No text to translate" });
+      if(locale !== 'american-to-british' && locale !== 'british-to-american'){
+        return res.json({error:'Invalid value for locale field'})
       }
-      if (!req.body.text || !req.body.locale) {
-        return res.json({ error: "Required field(s) missing" });
+
+      if(locale|text !== undefined){
+      return res.json({text:text,translation:translator.returnMe(text,locale)})
       }
-      if (!locator.includes(req.body.locale)) {
-        return res.json({ error: "Invalid value for locale field" });
-      }
-  
-      let result = translator.translate(req.body.text, req.body.locale);
-      return res.json({ text: req.body.text, translation: result });
     });
 };
