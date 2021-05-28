@@ -7,3 +7,4 @@ FreeCodeCamp course "Quality Assurance" and Fife projects for it :
 4. Sudoku Solver
 5. American British Translator
 
+Finished.
